@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">FlashAndSound</string>
+    <string name="settings">settings</string>
+    <string name="exit">exit</string>
+    <string name="FLASH">FLASH</string>
+    <string name="SOUND">SOUND</string>
+</resources>
