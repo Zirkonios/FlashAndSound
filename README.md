@@ -6,4 +6,4 @@ https://developer.android.com, χρησιμοποιήθηκε για το κομ
 Τέλος, διάφορα threads στο stackoverflow, όπως https://stackoverflow.com/questions/11278507/android-widget-switch-on-off-event-listener και https://stackoverflow.com/questions/27657017/vertically-center-two-switches
 
 
-Commits γίνανε στο GitHub και μετά το project μεταφέρθηκε στο scanlab
+Commits γίνανε στο GitHub (δημιουργήθηκε στο https://github.com/Zirkonios/FlashAndSound) και μετά το project μεταφέρθηκε στο scanlab
