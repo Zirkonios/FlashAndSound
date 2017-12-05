@@ -23,6 +23,8 @@ import android.widget.Switch;
 import android.widget.Button;
 import android.widget.CompoundButton;
 
+import java.io.IOException;
+
 public class FlashAndSound extends Activity  {
 
     private Switch switFlash;
@@ -66,6 +68,8 @@ public class FlashAndSound extends Activity  {
             }
         });
 
+
+
         switSound = (Switch) findViewById(R.id.switchSound);
         switSound.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -88,7 +92,6 @@ public class FlashAndSound extends Activity  {
         });
 
         getCamera();
-        getSound();
     }
 
     private void getCamera() {
@@ -155,24 +158,16 @@ public class FlashAndSound extends Activity  {
         }
     }
 
-    private void getSound() {
-        mp = MediaPlayer.create(FlashAndSound.this, R.raw.holmusic);
-    }
-
     private void playSound() {
-        if (mp != null) {
-            mp.stop();
-            mp.reset();
-            mp = null;
-        }
+        mp = MediaPlayer.create(this, R.raw.holmusic);
         mp.start();
 
         switSound.setChecked(true);
     }
 
     private void stopSound() {
-        mp.stop();
-        mp.reset();
+        mp.release();
+        mp = null;
 
         switSound.setChecked(false);
     }
