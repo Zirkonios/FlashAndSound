@@ -22,8 +22,9 @@ import android.widget.TextView;
 import android.widget.FrameLayout;
 import android.widget.Switch;
 import android.widget.Button;
+import android.widget.CompoundButton;
 
-public class FlashAndSound extends Activity {
+public class FlashAndSound extends Activity  {
 
     private Switch switFlash;
     private Switch switSound;
@@ -55,8 +56,37 @@ public class FlashAndSound extends Activity {
         }
 
         switFlash = (Switch) findViewById(R.id.switchflash);
+        switFlash.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (switFlash.isChecked()) {
+                        turnOnFlash();
+                    } else {
+                        turnOffFlash();
+                    }
+            }
+        });
+
         switSound = (Switch) findViewById(R.id.switchSound);
+        switSound.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (switSound.isChecked()) {
+                    playSound();
+                } else {
+                    stopSound();
+                }
+            }
+        });
+
         OffButton = (Button) findViewById(R.id.OffButton);
+        OffButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                turnOffFlash();
+                stopSound();
+            }
+        });
 
         getCamera();
         getSound();
@@ -148,8 +178,6 @@ public class FlashAndSound extends Activity {
         switSound.setChecked(false);
     }
 
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -191,6 +219,7 @@ public class FlashAndSound extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        finish();
     }
 
 
