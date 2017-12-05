@@ -1,7 +1,6 @@
 package com.anaptixi.flashandsound;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,20 +9,16 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.FrameLayout;
 import android.widget.Switch;
 import android.widget.Button;
 import android.widget.CompoundButton;
 
-import java.io.IOException;
+
 
 public class FlashAndSound extends Activity  {
 
@@ -86,8 +81,12 @@ public class FlashAndSound extends Activity  {
         OffButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                turnOffFlash();
-                stopSound();
+                if (switFlash.isChecked()) {
+                    turnOffFlash();
+                }
+                if (switSound.isChecked()) {
+                    stopSound();
+                }
             }
         });
 
