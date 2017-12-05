@@ -7,39 +7,42 @@
     tools:context="com.anaptixi.flashandsound.SettingsActivity">
 
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/editTextIP"
         android:layout_width="233dp"
         android:layout_height="60dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="numberDecimal"
-        android:text="IP"
+        android:text="@string/ip"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/Menu1" />
 
     <EditText
-        android:id="@+id/editText3"
+        android:id="@+id/editTextPort"
         android:layout_width="235dp"
         android:layout_height="56dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="number"
-        android:text="PORT"
+        android:text="@string/port"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText2"
+        app:layout_constraintTop_toBottomOf="@+id/editTextIP"
+        app:layout_constraintVertical_bias="0.046"
         tools:text="@string/Menu2" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="90dp"
         android:layout_height="58dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="8dp"
-        android:text="OK"
-        app:layout_constraintStart_toEndOf="@+id/editText2"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/ok"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/Okiedokie" />
 
@@ -47,24 +50,17 @@
         android:id="@+id/button2"
         android:layout_width="87dp"
         android:layout_height="58dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="8dp"
-        android:text="OK"
-        app:layout_constraintStart_toEndOf="@+id/editText3"
-        app:layout_constraintTop_toBottomOf="@+id/button"
-        tools:text="@string/Okiedokie" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
-        android:text="Return"
+        android:text="@string/ok"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText3" />
+        app:layout_constraintHorizontal_bias="0.692"
+        app:layout_constraintStart_toEndOf="@+id/editTextPort"
+        app:layout_constraintTop_toBottomOf="@+id/button"
+        app:layout_constraintVertical_bias="0.052"
+        tools:text="@string/Okiedokie" />
+
 </android.support.constraint.ConstraintLayout>

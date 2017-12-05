@@ -1,5 +1,9 @@
 package com.anaptixi.flashandsound;
 
+
+import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
@@ -10,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.media.MediaPlayer;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,10 +23,14 @@ import android.view.View;
 import android.widget.Switch;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.Toast;
+
+import CustomSettings.CustomSettings;
+
+import static CustomSettings.CustomSettings.topic;
 
 
-
-public class FlashAndSound extends Activity  {
+public class FlashAndSound extends AppCompatActivity implements MqttCallback {
 
     private Switch switFlash;
     private Switch switSound;
@@ -56,16 +65,14 @@ public class FlashAndSound extends Activity  {
         switFlash = (Switch) findViewById(R.id.switchflash);
         switFlash.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (switFlash.isChecked()) {
-                        turnOnFlash();
-                    } else {
-                        turnOffFlash();
-                    }
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (switFlash.isChecked()) {
+                    turnOnFlash();
+                } else {
+                    turnOffFlash();
+                }
             }
         });
-
-
 
         switSound = (Switch) findViewById(R.id.switchSound);
         switSound.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -86,16 +93,32 @@ public class FlashAndSound extends Activity  {
                 if (switFlash.isChecked()) {
                     turnOffFlash();
                 }
-                if (!switFlash.isChecked()) {
-                    if (switSound.isChecked()){
-                        stopSound();
-                    }
+                if (switSound.isChecked()) {
+                    stopSound();
                 }
-                finish();
             }
         });
 
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.flashicon);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
         getCamera();
+
+
+        MemoryPersistence persistence = new MemoryPersistence();
+        try {
+            MqttClient sampleClient = new MqttClient(CustomSettings.broker, CustomSettings.clientId, persistence);
+            MqttConnectOptions connOpts = new MqttConnectOptions();
+            connOpts.setCleanSession(true);
+            sampleClient.setCallback(this);
+            sampleClient.connect(connOpts);
+            sampleClient.subscribe(topic, 2);
+            Toast.makeText(this, "MQTT READY", Toast.LENGTH_LONG).show();
+        } catch (MqttException me) {
+            me.printStackTrace();
+
+            Toast.makeText(this, "MQTT ERROR", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void getCamera() {
@@ -163,15 +186,21 @@ public class FlashAndSound extends Activity  {
     }
 
     private void playSound() {
-        mp = MediaPlayer.create(this, R.raw.holmusic);
-        mp.start();
-
+        if (mp == null) {
+            mp = MediaPlayer.create(this, R.raw.holmusic);
+            mp.start();
+        }
         switSound.setChecked(true);
     }
 
     private void stopSound() {
-        mp.release();
-        mp = null;
+        if (mp != null) {
+            if (mp.isPlaying()) {
+                mp.stop();
+            }
+            mp.release();
+            mp = null;
+        }
 
         switSound.setChecked(false);
     }
@@ -180,18 +209,17 @@ public class FlashAndSound extends Activity  {
     protected void onDestroy() {
         super.onDestroy();
 
+        turnOffFlash();
+        stopSound();
+
         if (camera != null) {
             camera.release();
             camera = null;
         }
-        mp.release();
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        turnOffFlash();
-        stopSound();
+        if (mp != null) {
+            mp.release();
+        }
     }
 
     @Override
@@ -221,4 +249,54 @@ public class FlashAndSound extends Activity  {
     }
 
 
+    // ******************************************************************************
+    //                             M Q T T  callbacks
+    // ******************************************************************************
+    @Override
+    public void connectionLost(Throwable cause) {
+
+    }
+
+    @Override
+    public void messageArrived(String topic, MqttMessage message) throws Exception {
+        String data = new String(message.getPayload());
+
+        if (data.equals("fon")) {
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    turnOnFlash();
+                }
+            });
+        }
+        if (data.equals("foff")) {
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    turnOffFlash();
+                }
+            });
+        }
+        if (data.equals("son")) {
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    playSound();
+                }
+            });
+        }
+        if (data.equals("soff")) {
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    stopSound();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void deliveryComplete(IMqttDeliveryToken token) {
+
+    }
 }

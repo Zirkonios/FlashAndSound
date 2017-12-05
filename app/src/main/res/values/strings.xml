@@ -8,4 +8,8 @@
     <string name="Menu1">IP Address</string>
     <string name="Menu2">Port Number</string>
     <string name="Okiedokie">OK</string>
+    <string name="ip">IP</string>
+    <string name="port">PORT</string>
+    <string name="ok">OK</string>
+    <string name="ok2">OK</string>
 </resources>
