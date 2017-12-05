@@ -5,4 +5,7 @@
     <string name="FLASH">FLASH</string>
     <string name="SOUND">SOUND</string>
     <string name="BUTTON">Everything Off</string>
+    <string name="Menu1">IP Address</string>
+    <string name="Menu2">Port Number</string>
+    <string name="Okiedokie">OK</string>
 </resources>

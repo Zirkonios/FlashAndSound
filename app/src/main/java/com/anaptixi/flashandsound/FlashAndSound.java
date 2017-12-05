@@ -1,6 +1,7 @@
 package com.anaptixi.flashandsound;
 
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,6 +31,7 @@ public class FlashAndSound extends Activity  {
     private boolean hasFlash = false;
     private Parameters params;
     private MediaPlayer mp;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
