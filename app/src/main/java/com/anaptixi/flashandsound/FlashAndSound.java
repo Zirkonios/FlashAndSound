@@ -84,8 +84,10 @@ public class FlashAndSound extends Activity  {
                 if (switFlash.isChecked()) {
                     turnOffFlash();
                 }
-                if (switSound.isChecked()) {
-                    stopSound();
+                if (!switFlash.isChecked()) {
+                    if (switSound.isChecked()){
+                        stopSound();
+                    }
                 }
             }
         });
