@@ -89,6 +89,7 @@ public class FlashAndSound extends Activity  {
                         stopSound();
                     }
                 }
+                finish();
             }
         });
 

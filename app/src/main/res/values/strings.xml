@@ -4,4 +4,5 @@
     <string name="exit">exit</string>
     <string name="FLASH">FLASH</string>
     <string name="SOUND">SOUND</string>
+    <string name="BUTTON">Everything Off</string>
 </resources>
