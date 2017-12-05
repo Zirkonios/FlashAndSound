@@ -250,7 +250,7 @@ public class FlashAndSound extends AppCompatActivity implements MqttCallback {
 
 
     // ******************************************************************************
-    //                             M Q T T  callbacks
+    // ++++++                         M Q T T  callbacks                       ++++++
     // ******************************************************************************
     @Override
     public void connectionLost(Throwable cause) {
