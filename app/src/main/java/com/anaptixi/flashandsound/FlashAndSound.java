@@ -113,12 +113,15 @@ public class FlashAndSound extends AppCompatActivity implements MqttCallback {
             sampleClient.setCallback(this);
             sampleClient.connect(connOpts);
             sampleClient.subscribe(topic, 2);
+            // sampleClient.isConnected();
             Toast.makeText(this, "MQTT READY", Toast.LENGTH_LONG).show();
         } catch (MqttException me) {
             me.printStackTrace();
 
             Toast.makeText(this, "MQTT ERROR", Toast.LENGTH_LONG).show();
         }
+
+        // create monitoring thread
     }
 
     private void getCamera() {
@@ -220,6 +223,10 @@ public class FlashAndSound extends AppCompatActivity implements MqttCallback {
         if (mp != null) {
             mp.release();
         }
+
+
+        // stop monitoring thread
+//        System.exit(0);
     }
 
     @Override
@@ -260,6 +267,8 @@ public class FlashAndSound extends AppCompatActivity implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         String data = new String(message.getPayload());
+
+        // turnOnFlash();
 
         if (data.equals("fon")) {
             this.runOnUiThread(new Runnable() {
