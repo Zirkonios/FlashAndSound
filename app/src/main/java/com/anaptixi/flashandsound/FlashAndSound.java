@@ -203,7 +203,7 @@ public class FlashAndSound extends AppCompatActivity implements MqttCallback {
                 }
 
                 try {
-                    tora.sleep(3000);
+                    tora.sleep(30000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     break;
