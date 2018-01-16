@@ -1,31 +1,39 @@
 package com.anaptixi.flashandsound;
 
 
-import org.eclipse.paho.client.mqttv3.*;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-
-import android.content.Intent;
-import android.support.v7.app.ActionBar;
-import android.os.Bundle;
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Switch;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
 import CustomSettings.CustomSettings;
+import threads.Subscriber;
 
 import static CustomSettings.CustomSettings.topic;
 
@@ -40,6 +48,13 @@ public class FlashAndSound extends AppCompatActivity implements MqttCallback {
     private boolean hasFlash = false;
     private Parameters params;
     private MediaPlayer mp;
+    private MonitorThread thrd = new MonitorThread();
+
+    public boolean networkConnectionExists() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
 
     @Override
@@ -100,28 +115,15 @@ public class FlashAndSound extends AppCompatActivity implements MqttCallback {
         });
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.flashicon);
+        getSupportActionBar().setLogo(R.drawable.blooo);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getCamera();
 
-
-        MemoryPersistence persistence = new MemoryPersistence();
-        try {
-            MqttClient sampleClient = new MqttClient(CustomSettings.broker, CustomSettings.clientId, persistence);
-            MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setCleanSession(true);
-            sampleClient.setCallback(this);
-            sampleClient.connect(connOpts);
-            sampleClient.subscribe(topic, 2);
-            // sampleClient.isConnected();
-            Toast.makeText(this, "MQTT READY", Toast.LENGTH_LONG).show();
-        } catch (MqttException me) {
-            me.printStackTrace();
-
-            Toast.makeText(this, "MQTT ERROR", Toast.LENGTH_LONG).show();
-        }
-
         // create monitoring thread
+
+        thrd.start();
+
+        SettingsActivity.parent = this;
     }
 
     private void getCamera() {
@@ -151,6 +153,67 @@ public class FlashAndSound extends AppCompatActivity implements MqttCallback {
         }
     }
 
+    public class MonitorThread extends Thread {
+        public volatile boolean prev;
+        public volatile boolean temp;
+
+        public void run() {
+            Subscriber.subscribe(FlashAndSound.this);
+
+            Thread tora = currentThread();
+            if (networkConnectionExists()) {
+                prev = true;
+            } else {
+                prev = false;
+            }
+
+            while (tora.isInterrupted() == false) {
+                if (networkConnectionExists()) {
+                    temp = true;
+                } else {
+                    temp = false;
+                }
+
+                if (prev == true && temp == false) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(FlashAndSound.this, "Disconnected from network, please check wifi.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                if (prev == true && temp == true) {
+                    if (CustomSettings.autoflag) {
+                        Subscriber.subscribe(FlashAndSound.this);
+                    }
+                }
+
+                if (prev == false && temp == true) {
+                    if (CustomSettings.autoflag) {
+                        Subscriber.subscribe(FlashAndSound.this);
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(FlashAndSound.this, "Note: there is no connection, please check wifi.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+
+                try {
+                    tora.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+
+        }
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -164,6 +227,10 @@ public class FlashAndSound extends AppCompatActivity implements MqttCallback {
             case R.id.id_settings:
                 Intent aboutIntent = new Intent(FlashAndSound.this, SettingsActivity.class);
                 startActivity(aboutIntent);
+                break;
+            case R.id.id_frequency:
+                Intent fIntent = new Intent(FlashAndSound.this, FrequencyActivity.class);
+                startActivity(fIntent);
                 break;
             case R.id.id_exit:
                 finish();
@@ -224,9 +291,8 @@ public class FlashAndSound extends AppCompatActivity implements MqttCallback {
             mp.release();
         }
 
+        thrd.interrupt();
 
-        // stop monitoring thread
-//        System.exit(0);
     }
 
     @Override
@@ -251,8 +317,15 @@ public class FlashAndSound extends AppCompatActivity implements MqttCallback {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finish();
+        AlertDialog alert = new AlertDialog.Builder(FlashAndSound.this).create();
+        alert.setTitle("Attention");
+        alert.setMessage("You are about to exit the application!");
+        alert.setButton("Exit.", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        alert.show();
     }
 
 

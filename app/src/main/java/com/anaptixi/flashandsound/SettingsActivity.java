@@ -1,5 +1,6 @@
 package com.anaptixi.flashandsound;
 
+import android.opengl.Visibility;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.ClipboardManager;
@@ -14,14 +15,19 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import CustomSettings.CustomSettings;
+import threads.Subscriber;
 
 import static CustomSettings.CustomSettings.topic;
 
 
 public class SettingsActivity extends AppCompatActivity {
-
+    public static FlashAndSound parent;
     private Button buttonA;
     private Button buttonB;
+    private Button buttonC;
+    private Button buttonD;
+    private Button buttonE;
+    private Button buttonF;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +51,10 @@ public class SettingsActivity extends AppCompatActivity {
 
         buttonA = findViewById(R.id.button);
         buttonB = findViewById(R.id.button2);
+        buttonC = findViewById(R.id.button3);
+        buttonD = findViewById(R.id.button4);
+        buttonE = findViewById(R.id.button5);
+        buttonF = findViewById(R.id.button6);
 
         buttonA.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,5 +77,45 @@ public class SettingsActivity extends AppCompatActivity {
                 CustomSettings.broker = broker;
             }
         });
+
+        buttonC.setOnClickListener(new View.OnClickListener() { // manual
+            @Override
+            public void onClick(View v) {
+                CustomSettings.autoflag = false;
+                buttonE.setVisibility(View.VISIBLE);
+                buttonF.setVisibility(View.VISIBLE);
+            }
+        });
+
+        buttonD.setOnClickListener(new View.OnClickListener() { // auto
+            @Override
+            public void onClick(View v) {
+                CustomSettings.autoflag = true;
+                buttonE.setVisibility(View.INVISIBLE);
+                buttonF.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        buttonE.setOnClickListener(new View.OnClickListener() { // auto
+            @Override
+            public void onClick(View v) {
+                Subscriber.subscribe(parent);
+            }
+        });
+
+        buttonF.setOnClickListener(new View.OnClickListener() { // auto
+            @Override
+            public void onClick(View v) {
+                Subscriber.unsubscribe(parent);
+            }
+        });
+
+        if (CustomSettings.autoflag) {
+            buttonE.setVisibility(View.INVISIBLE);
+            buttonF.setVisibility(View.INVISIBLE);
+        } else {
+            buttonE.setVisibility(View.VISIBLE);
+            buttonF.setVisibility(View.VISIBLE);
+        }
     }
 }

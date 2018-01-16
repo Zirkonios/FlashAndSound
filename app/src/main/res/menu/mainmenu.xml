@@ -6,6 +6,9 @@
         android:id="@+id/id_settings"
         android:title="@string/settings" />
     <item
+        android:id="@+id/id_frequency"
+        android:title="@string/frequency" />
+    <item
         android:id="@+id/id_exit"
         android:title="@string/exit" />
 </menu>

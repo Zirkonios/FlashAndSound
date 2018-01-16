@@ -12,4 +12,11 @@
     <string name="port">PORT</string>
     <string name="ok">OK</string>
     <string name="ok2">OK</string>
+    <string name="frequency">frequency</string>
+    <string name="frequency_value">1000</string>
+    <string name="MenuFrequency">1000 ms</string>
+    <string name="Auto">Auto mode</string>
+    <string name="Manual">Manual mode</string>
+    <string name="Manualsub">subscribe</string>
+    <string name="manualunsub">unsubscribe</string>
 </resources>
